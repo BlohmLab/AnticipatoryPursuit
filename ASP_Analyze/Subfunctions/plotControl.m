@@ -1,8 +1,8 @@
 try
-    origPath = 'D:\Master\Program\ASPAnalyze';
+    origPath = 'D:\Felix\Program\ASP_Analyze';
     %% Load data
     if cmd == 1
-        loadPath = 'D:\Master\Data\03_Combined';
+        loadPath = 'D:\Felix\Data\03_Combined';
         cd(loadPath);
         [filename1,pathname1] = uigetfile({'*.mat'},'Choose XP record file you want to load....'); %load in mat-file = Trial parameters
         cd(pathname1);
@@ -16,7 +16,7 @@ try
             if isnan(C.tEvents(4,z)) == 0 || z == length(C.tEvents(1,:))
                 tBlankOn = 0;
                 tMoveOn = C.tEvents(3,z)-C.tEvents(2,z);
-                tBlankVis = tMoveOn + 100;
+                tBlankVis = tMoveOn + 50;
                 if isnan(C.tEvents(4,z)) == 0
                     tBlipOn = C.tEvents(4,z)-C.tEvents(2,z);
                     tBlipOff = C.tEvents(5,z)-C.tEvents(2,z);
@@ -39,7 +39,7 @@ try
             plot([-1000 3000], [0 0],'k');
             lineBlankOn(a) = plot(tBlankOn*[1 1],[-ex ex],'k');
             lineMoveOn(a) = plot(tMoveOn*[1 1],[-ex ex],'k');
-            lineBlankVis = plot((tMoveOn+100)*[1 1],[-ex ex],'Color',[0 0.8 0.8]);
+            lineBlankVis = plot((tMoveOn+50)*[1 1],[-ex ex],'Color',[0 0.8 0.8]);
             lineBlipkOn(a) = plot(tBlipOn*[1 1],[-ex ex],'Color',[0 0.25 1]);
             %lineBlipOff(a) = plot(tBlipOff*[1 1],[-ex ex],'Color',[0 0.25 1]);
             lineBlipEnd(a) = plot((tBlipOff+200)*[1 1],[-ex ex],'Color',[0 0.25 1]);
@@ -65,7 +65,7 @@ try
         
         ymin1 = 50;
         ymax1 = -50;
-        for p = 1:4
+        for p = 1:6
             if sum(plotData.av(p,:)) ~= 0
                 if min(plotData.av(p,(xmin+1:xmax)+plotData.preblank(p))) <= ymin1
                     ymin1 = floor(min(plotData.av(p,(xmin+1:xmax)+plotData.preblank(p)))/5)*5;
@@ -101,7 +101,7 @@ try
         
         ymin2 = 50;
         ymax2 = -50;
-        for p = 1:4
+        for p = 1:6
             if sum(plotData.sub(p,:)) ~= 0
                 if min(plotData.sub(p,(xmin+1:xmax-500)+plotData.preblank(p))) <= ymin2
                     ymin2 = floor(min(plotData.sub(p,(xmin+1:xmax)+plotData.preblank(p)))*0.5)/0.5;
@@ -138,7 +138,7 @@ try
         
         ymin3 = 15;
         ymax3 = -15;
-        for p = 1:4
+        for p = 1:6
             if sum(plotData.sd(p,:)) ~= 0
                 if min(plotData.sd(p,(xmin+1:xmax)+plotData.preblank(p))) <= ymin3
                     ymin3 = floor(min(plotData.sd(p,(xmin+1:xmax)+plotData.preblank(p)))/1);
@@ -171,20 +171,22 @@ try
             set(plotData.fig3(numPlot),'Visible','off');
         end
         plotData.av(numPlot,:) = NaN;
-        plotData.sub(numPlot,:) = NaN;
         plotData.sd(numPlot,:) = NaN;
-        for s = 1:8
-            uicontrol('Style','text','String','         ','Visible','on','units','normalized','Position', [0.70+numPlot/20 0.90-0.025*(s-1) 0.05 0.025]);
+        plotData.sub(numPlot,:) = NaN;
+        plotData.avData(numPlot,:) = NaN;
+        
+        for s = 1:10
+            uicontrol('Style','text','String','         ','Visible','on','units','normalized','Position', [0.70+numPlot/30 0.90-0.025*(s-1) 0.05 0.025]);
         end
-        uicontrol('Style','text','String','         ','Visible','on','units','normalized','Position', [0.70+numPlot/20 0.625 0.05 0.025]);
-        uicontrol('Style','text','String','         ','Visible','on','units','normalized','Position', [0.70+numPlot/20 0.600 0.05 0.025]);
+        uicontrol('Style','text','String','         ','Visible','on','units','normalized','Position', [0.70+numPlot/30 0.525 0.05 0.025]);
+        uicontrol('Style','text','String','         ','Visible','on','units','normalized','Position', [0.70+numPlot/30 0.500 0.05 0.025]);
         for s = 1:7
-            uicontrol('Style','text','String','         ','Visible','on','units','normalized','Position', [0.70+numPlot/20 0.55-0.025*(s-1) 0.05 0.025]);
+            uicontrol('Style','text','String','         ','Visible','on','units','normalized','Position', [0.70+numPlot/30 0.45-0.025*(s-1) 0.05 0.025]);
         end
         
         %% Delete old plots in fig 2
     elseif cmd == 7
-        for o = 1:4
+        for o = 1:6
             axes(ax(2));
             set(plotData.fig2(o),'Visible','off');
             plotData.sub(o,:) = NaN;

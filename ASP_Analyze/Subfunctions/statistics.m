@@ -1,74 +1,207 @@
-function [E] = statistics(X_ASP,M_rv,E,hexblk,M_bl_a)
+function [E] = statistics(C,E,multiSession,multiHB,X_single_ASP)
 
-%% General ASP ANOVA for each hexablock
+% Define amount of non-block-first trials
+% apBlocks = sum(E.spec.prevTrial(:,1)~=0)/2;
+
+%% General real_ASP ANOVA for each hexablock
+E.rASP1_Stats = cell(3,9);
+E.rASP1_Stats(1,:) = {'Dir','F','p','pn^2','w^2','s','n','SS','MS'};
+E.rASP1_Stats(2:3,1) = {'Left','Right'};
+
 for d = 1:2
-    [p,tbl,ano_stats]=anova1(X_ASP(:,:,d)); % 1-way ANOVA
-    mes_stats=mes1way(X_ASP(:,:,d),{'omega2','eta2','partialeta2'}); % 1-way MES analysis
+    [p,tbl,ano_stats]=anova1(X_single_ASP(:,:,d)); % 1-way ANOVA
+    mes_stats=mes1way(X_single_ASP(:,:,d),{'omega2','eta2','partialeta2'}); % 1-way MES analysis
+    close Figure 2; close Figure 3; 
     % Save stats
-    E.AspStats.SS(1:3,d) = cell2mat(tbl(2:4,2));
-    E.AspStats.MS(1:2,d) = cell2mat(tbl(2:3,4));
-    E.AspStats.F(1,d) = cell2mat(tbl(2,5));
-    E.AspStats.p(1,d) = p;
-    E.AspStats.n(1:3,d) = ano_stats.n; % number of observations per group
-    E.AspStats.df(1,d) = ano_stats.df; % Error degrees of freedom
-    E.AspStats.s(1,d) = ano_stats.s; % square root of mean squared error
-    E.AspStats.eta2(1,d) = mes_stats.eta2;
-    E.AspStats.peta2(1,d) = mes_stats.partialeta2;
-    E.AspStats.omega2(1,d) = mes_stats.omega2;
+    E.rASP1_Stats(d+1,2) = tbl(2,5);
+    E.rASP1_Stats(d+1,3) = {p};
+    E.rASP1_Stats(d+1,4) = {mes_stats.partialeta2};
+    E.rASP1_Stats(d+1,5) = {mes_stats.omega2};
+    E.rASP1_Stats(d+1,6) = {ano_stats.s}; % square root of mean squared error
+    E.rASP1_Stats(d+1,7) = {ano_stats.n}; % number of observations per group
+    E.rASP1_Stats(d+1,8) = {cell2mat(tbl(2:4,2))};
+    E.rASP1_Stats(d+1,9) = {cell2mat(tbl(2:3,4))};
+end
+
+%% Calculate ANOVA for hexablock x pPiS - single session (rv|ev|NSacc|On)
+for para = 1:4 % 1:rv_ASP | 2:ev_ASP | 3:N_Sacc | 4:Onset  
+    ANO2_Stats = cell(11,8);
+    for n = 0:2
+        ANO2_Stats(4*n+1,1:7) = {'Dir','F','p','pn^2','w^2','SS','MS'};
+        ANO2_Stats(4*n+1:4*n+3,1) = {'Dir','Left','Right'};
+    end
+    ANO2_Stats(1,8) = {'HexaBlock'}; ANO2_Stats(5,8) = {'pPiS'}; ANO2_Stats(9,8) = {'Interact'};
     
-end
-
-%% ASP ANOVA for hexablock x pNiS
-for d = 1:2
-    % Resort data for analysis
-    group = [];
-    group(:,1) = E.blockNr(E.prevTrial(:,1)==d,2);
-    group(:,2) = E.prevTrial(E.prevTrial(:,1)==d,2);
-    sgroup = ones(length(group),2)*NaN; % Sorted data information (group identity)
-    S_rv(1:hexblk(4,3),1) = M_rv(1:length(group),1,d); S_rv(:,2) = group(:,2); % Sorted mean ASP velocities
-    for h = 1:3
-        sgroup(hexblk(3,h):hexblk(4,h),:) = sortrows(group(group(:,1)==h,:),2);
-        S_rv(group(:,1)==h,:) = sortrows(S_rv(group(:,1)==h,:),2);
-    end
-    [p,tbl,ano_stats] = anovan(S_rv(1:length(group),1),sgroup,'model','interaction','varnames',{'hexaBlock','pNiS'}); % 2-way ANOVA
-    mes_stats = mes2way(S_rv(1:length(group),1),sgroup,{'omega2','eta2','partialeta2'},'fName',{'hexaBlock','pNiS'}); % 2-way MES analysis
-    %Save stats
-    E.LearnStats.SS(1:4,d) = cell2mat(tbl(2:5,2));
-    E.LearnStats.MS(1:3,d) = cell2mat(tbl(2:4,5)); % 1:HexaBlock / 2:pNiS / 3:Error
-    E.LearnStats.F(1:3,d) = cell2mat(tbl(2:4,6));
-    E.LearnStats.p(1:3,d) = p;
-    E.LearnStats.dfe(1,d) = ano_stats.dfe;
-    E.LearnStats.s(1,d) = sqrt(cell2mat(tbl(4,5)));
-    E.LearnStats.eta2(1:3,d) = mes_stats.eta2;
-    E.LearnStats.peta2(1:3,d) = mes_stats.partialeta2;
-    E.LearnStats.omega2(1:3,d) = mes_stats.omega2;
-end
-
-%% Blip peak ANOVA for hexablock x blip condition
-
-for d = 1:2
-    %figHistoBlip(d) = figure;
-    group(:,1) = E.blockNr(E.trialDr(:,1)==d,2);
-    group(:,2) = E.trialBlip(E.trialDr==d);
-    for peak = 1:2
-        S_bl(:,1) = M_bl_a(:,E.bliptimes_a(2*peak,h,d),1,d); S_bl(:,2) = group(:,2); % Sorted blip peaks
-        for h = 1:3
-            sgroup(hexblk(3,h):hexblk(4,h),:) = sortrows(group(group(:,1)==h,:),2);
-            S_bl(group(:,1)==h,:) = sortrows(S_bl(group(:,1)==h,:),2);
+    for d = 1:2
+        % Resort data for analysis
+        group = [];
+        group(:,1) = E.spec.HB(E.spec.exclude==0 & E.spec.prevTrial(:,1)==d,3);
+        group(:,2) = E.spec.prevTrial(E.spec.exclude==0 & E.spec.prevTrial(:,1)==d,2);
+        sANO = [];
+        if para == 1
+            sANO(:,1) = E.rv_ASP(E.spec.exclude==0 & E.spec.prevTrial(:,1)==d);
+        elseif para == 2
+            sANO(:,1) = E.ev_ASP(E.spec.exclude==0 & E.spec.prevTrial(:,1)==d);
+        elseif para == 3
+            sANO(:,1) = E.saccades(E.spec.exclude==0 & E.spec.prevTrial(:,1)==d);
+        elseif para == 4
+            sANO(:,1) = E.on_ASP(E.spec.exclude==0 & E.spec.prevTrial(:,1)==d);
         end
-        [p,tbl,ano_stats] = anovan(S_bl(1:length(group),1),sgroup,'model','interaction','varnames',{'hexaBlock','blipDir'}); % 2-way ANOVA
-        mes_stats = mes2way(S_bl(1:length(group),1),sgroup,{'omega2','eta2','partialeta2'},'fName',{'hexaBlock','blipDir'}); % 2-way MES analysis
-        %Save stats
-        E.BlipStats.SS(1:4,peak,d) = cell2mat(tbl(2:5,2));
-        E.BlipStats.MS(1:3,peak,d) = cell2mat(tbl(2:4,5)); % 1:HexaBlock / 2:pNiS / 3:Error
-        E.BlipStats.F(1:3,peak,d) = cell2mat(tbl(2:4,6));
-        E.BlipStats.p(1:3,peak,d) = p;
-        E.BlipStats.dfe(1,peak,d) = ano_stats.dfe;
-        E.BlipStats.s(1,peak,d) = sqrt(cell2mat(tbl(4,5)));
-        E.BlipStats.eta2(1:3,peak,d) = mes_stats.eta2;
-        E.BlipStats.peta2(1:3,peak,d) = mes_stats.partialeta2;
-        E.BlipStats.omega2(1:3,peak,d) = mes_stats.omega2;
+        sANO(:,2:3) = group(:,1:2);
+        sANO = sortrows(sANO,[2 3]); % Sort values according to hexablock & pPiS
+        [p,tbl,ano_stats] = anovan(sANO(:,1),sANO(:,2:3),'model','interaction','varnames',{'hexaBlock','pPiS'}); % 2-way ANOVA
+        mes_stats = mes2way(sANO(:,1),sANO(:,2:3),{'omega2','eta2','partialeta2'},'fName',{'hexaBlock','pPiS'}); % 2-way MES analysis
+        close Figure 2;
+        % Save stats
+        %     E.LearnStats.dfe(1,d) = ano_stats.dfe;
+        %     E.LearnStats.s(1,d) = sqrt(cell2mat(tbl(4,5)));
+        for n = 0:2
+            ANO2_Stats(4*n+d+1,2) = tbl(2+n,6);
+            ANO2_Stats(4*n+d+1,3) = {p(n+1)};
+            ANO2_Stats(4*n+d+1,4) = {mes_stats.partialeta2(n+1)};
+            ANO2_Stats(4*n+d+1,5) = {mes_stats.omega2(n+1)};
+            %ANO2_Stats(4*n+d+1,6) = {ano_stats.s}; % square root of mean squared error
+            %ANO2_Stats(4*n+d+1,7) = {ano_stats.n}; % number of observations per group
+            ANO2_Stats(4*n+d+1,6) = tbl(2+n,2);
+            ANO2_Stats(4*n+d+1,7) = tbl(2+n,5);
+        end
+    end
+    if para == 1
+        E.single.rASP2_Stats = ANO2_Stats;
+    elseif para == 2
+        E.single.eASP2_Stats = ANO2_Stats;
+    elseif para == 3
+        E.single.SACC2_Stats = ANO2_Stats;
+    elseif para == 4
+        E.single.ONSET2_Stats = ANO2_Stats;
     end
 end
 
+%% Calculate ANOVA for hexablock x pPiS - multi-session (rv|ev|NSacc|On)
+if multiSession == 1
+    for para = 1:4 % 1:rv_ASP | 2:ev_ASP | 3:N_Sacc | 4:Onset
+        ANO2_Stats = cell(11,8);
+        for n = 0:2
+            ANO2_Stats(4*n+1,1:7) = {'Dir','F','p','pn^2','w^2','SS','MS'};
+            ANO2_Stats(4*n+1:4*n+3,1) = {'Dir','Left','Right'};
+        end
+        ANO2_Stats(1,8) = {'Stim'}; ANO2_Stats(5,8) = {'pPiS'}; ANO2_Stats(9,8) = {'Interact'};
+        
+        for d = 1:2
+            % Resort data for analysis
+            group = [];
+            group(:,1) = E.spec.stimType(E.spec.exclude==0 & E.spec.prevTrial(:,1)==d & E.spec.HB(:,3)==multiHB,3);
+            group(:,2) = E.spec.prevTrial(E.spec.exclude==0 & E.spec.prevTrial(:,1)==d & E.spec.HB(:,3)==multiHB,2);
+            sANO = [];
+            if para == 1
+                sANO(:,1) = E.rv_ASP(E.spec.exclude==0 & E.spec.prevTrial(:,1)==d & E.spec.HB(:,3)==multiHB);
+            elseif para == 2
+                sANO(:,1) = E.ev_ASP(E.spec.exclude==0 & E.spec.prevTrial(:,1)==d & E.spec.HB(:,3)==multiHB);
+            elseif para == 3
+                sANO(:,1) = E.saccades(E.spec.exclude==0 & E.spec.prevTrial(:,1)==d & E.spec.HB(:,3)==multiHB);
+            elseif para == 4
+                sANO(:,1) = E.on_ASP(E.spec.exclude==0 & E.spec.prevTrial(:,1)==d & E.spec.HB(:,3)==multiHB);
+            end
+            sANO(:,2:3) = group(:,1:2);
+            sANO = sortrows(sANO,[2 3]); % Sort values according to hexablock & pPiS
+            [p,tbl,ano_stats] = anovan(sANO(:,1),sANO(:,2:3),'model','interaction','varnames',{'hexaBlock','pPiS'}); % 2-way ANOVA
+            mes_stats = mes2way(sANO(:,1),sANO(:,2:3),{'omega2','eta2','partialeta2'},'fName',{'hexaBlock','pPiS'}); % 2-way MES analysis
+            close Figure 2;
+            % Save stats
+            %     E.LearnStats.dfe(1,d) = ano_stats.dfe;
+            %     E.LearnStats.s(1,d) = sqrt(cell2mat(tbl(4,5)));
+            for n = 0:2
+                ANO2_Stats(4*n+d+1,2) = tbl(2+n,6);
+                ANO2_Stats(4*n+d+1,3) = {p(n+1)};
+                ANO2_Stats(4*n+d+1,4) = {mes_stats.partialeta2(n+1)};
+                ANO2_Stats(4*n+d+1,5) = {mes_stats.omega2(n+1)};
+                %ANO2_Stats(4*n+d+1,6) = {ano_stats.s}; % square root of mean squared error
+                %ANO2_Stats(4*n+d+1,7) = {ano_stats.n}; % number of observations per group
+                ANO2_Stats(4*n+d+1,6) = tbl(2+n,2);
+                ANO2_Stats(4*n+d+1,7) = tbl(2+n,5);
+            end
+        end
+        if para == 1
+            E.multi.rASP2_Stats = ANO2_Stats;
+        elseif para == 2
+            E.multi.eASP2_Stats = ANO2_Stats;
+        elseif para == 3
+            E.multi.SACC2_Stats = ANO2_Stats;
+        elseif para == 4
+            E.multi.ONSET2_Stats = ANO2_Stats;
+        end
+    end
+end
+%% Blip peak ANOVA for hexablock x blip cond - single session
+ANO2_Stats = cell(17,9);
+for n = 0:2
+    ANO2_Stats(6*n+1,1:8) = {'Peak','Dir','F','p','pn^2','w^2','SS','MS'};
+    ANO2_Stats(6*n+1:6*n+5,1) = {'Dir','Left','Left','Right','Right'};
+end
+ANO2_Stats(1,9) = {'HexaBlock'}; ANO2_Stats(7,9) = {'BlipCond'}; ANO2_Stats(13,9) = {'Interact'};
+
+for d = 1:2
+    group = [];
+    group(:,1) = E.spec.HB(E.spec.exclude==0 & E.spec.trialDr==d,3);
+    group(:,2) = E.spec.trialBlip(E.spec.exclude==0 & E.spec.trialDr==d);
+    for peak = 1:2
+        sANO = [];
+        %sANO(:,1) = M_bl_a(:,E.bliptimes_a(2*peak,1,d),1,d); sANO(:,2:3) = group(:,1:2); % Sorted blip peaks
+        sANO(:,1) = C.eyeXvws(E.bliptimes_a(2*peak,1,d),E.spec.exclude==0 & E.spec.trialDr==d); 
+        sANO(:,2:3) = group(:,1:2);
+        sANO = sortrows(sANO,[2 3]);
+        [p,tbl,ano_stats] = anovan(sANO(:,1),sANO(:,2:3),'model','interaction','varnames',{'hexaBlock','blipDir'}); % 2-way ANOVA
+        mes_stats = mes2way(sANO(:,1),sANO(:,2:3),{'omega2','eta2','partialeta2'},'fName',{'hexaBlock','blipDir'}); % 2-way MES analysis
+        close Figure 2;
+        % Save stats
+        for n = 0:2
+            ANO2_Stats(6*n+2*d+peak-1,2) = {peak};
+            ANO2_Stats(6*n+2*d+peak-1,3) = tbl(2+n,6);
+            ANO2_Stats(6*n+2*d+peak-1,4) = {p(n+1)};
+            ANO2_Stats(6*n+2*d+peak-1,5) = {mes_stats.partialeta2(n+1)};
+            ANO2_Stats(6*n+2*d+peak-1,6) = {mes_stats.omega2(n+1)};
+            %E.rASP2_Stats(4*n+d+1,6) = {ano_stats.s}; % square root of mean squared error
+            %E.rASP2_Stats(4*n+d+1,7) = {ano_stats.n}; % number of observations per group
+            ANO2_Stats(6*n+2*d+peak-1,7) = tbl(2+n,2);
+            ANO2_Stats(6*n+2*d+peak-1,8) = tbl(2+n,5);
+        end
+    end
+end
+E.single.Blip2_Stats = ANO2_Stats;
+
+%% Blip peak ANOVA for hexablock x blip cond - multi-session
+ANO2_Stats = cell(17,9);
+for n = 0:2
+    ANO2_Stats(6*n+1,1:8) = {'Dir','Peak','F','p','pn^2','w^2','SS','MS'};
+    ANO2_Stats(6*n+1:6*n+5,1) = {'Dir','Left','Left','Right','Right'};
+end
+ANO2_Stats(1,9) = {'Stim'}; ANO2_Stats(7,9) = {'BlipCond'}; ANO2_Stats(13,9) = {'Interact'};
+
+for d = 1:2
+    group = [];
+    group(:,1) = E.spec.stimType(E.spec.exclude==0 & E.spec.trialDr==d & E.spec.HB(:,3)==multiHB,3);
+    group(:,2) = E.spec.trialBlip(E.spec.exclude==0 & E.spec.trialDr==d & E.spec.HB(:,3)==multiHB);
+    for peak = 1:2
+        sANO = [];
+        sANO(:,1) = C.eyeXvws(E.bliptimes_a(2*peak,1,d),E.spec.exclude==0 & E.spec.trialDr==d & E.spec.HB(:,3)==multiHB); 
+        sANO(:,2:3) = group(:,1:2); % Sorted blip peaks
+        sANO = sortrows(sANO,[2 3]);
+        [p,tbl,ano_stats] = anovan(sANO(:,1),sANO(:,2:3),'model','interaction','varnames',{'hexaBlock','blipDir'}); % 2-way ANOVA
+        mes_stats = mes2way(sANO(:,1),sANO(:,2:3),{'omega2','eta2','partialeta2'},'fName',{'hexaBlock','blipDir'}); % 2-way MES analysis
+        close Figure 2;
+        % Save stats
+        for n = 0:2
+            ANO2_Stats(6*n+2*d+peak-1,2) = {peak};
+            ANO2_Stats(6*n+2*d+peak-1,3) = tbl(2+n,6);
+            ANO2_Stats(6*n+2*d+peak-1,4) = {p(n+1)};
+            ANO2_Stats(6*n+2*d+peak-1,5) = {mes_stats.partialeta2(n+1)};
+            ANO2_Stats(6*n+2*d+peak-1,6) = {mes_stats.omega2(n+1)};
+            %E.rASP2_Stats(4*n+d+1,6) = {ano_stats.s}; % square root of mean squared error
+            %E.rASP2_Stats(4*n+d+1,7) = {ano_stats.n}; % number of observations per group
+            ANO2_Stats(6*n+2*d+peak-1,7) = tbl(2+n,2);
+            ANO2_Stats(6*n+2*d+peak-1,8) = tbl(2+n,5);
+        end
+    end
+end
+E.multi.Blip2_Stats = ANO2_Stats;
 end

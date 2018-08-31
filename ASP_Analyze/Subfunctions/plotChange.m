@@ -1,4 +1,4 @@
-origPath = 'D:\Master\Program\ASPAnalyze';
+origPath = 'D:\Felix\Program\ASP_Analyze';
 try
     color = {[0.75 0 1]; [1 0.25 0]; [0.5 1 0]; [0 0.5 1]};
     %% Invert plot
@@ -15,7 +15,7 @@ try
         %% Subtract plot
     elseif cmd == 2
         cmd = 7;plotControl;
-        for n = 1:4
+        for n = 1:6
             axes(ax(2));
             hold on;
             if sum(plotData.av(n,:)) ~= 0
