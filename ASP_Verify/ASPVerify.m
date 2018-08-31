@@ -2,8 +2,8 @@
 clear 
 warning off
 RectRight = 3;
-addpath('D:\Master\Program\ASPVerify\Subfunctions');
-loadPath = 'D:\Master\Data';
+addpath('D:\Felix\Program\ASP_Verify\Subfunctions');
+loadPath = 'D:\Felix\Data';
 
 %% create figure
 f = figure('Name','ASP Analysis Interface','Units','normalized','Position',[.01 .01 .98 .94],'toolbar','none','NumberTitle','off');

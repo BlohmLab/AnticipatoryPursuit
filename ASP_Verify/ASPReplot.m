@@ -1,7 +1,7 @@
 %% Plot position, velocity and acceleration data for single trial
-origPath = 'D:\Master\Program\ASPVerify';
+origPath = 'D:\Felix\Program\ASP_Verify';
 if firstload == 1
-    savePath = 'D:\Master\Data\02_Loaded';
+    savePath = 'D:\Felix\Data\02_Loaded';
 else
     savePath = pathname1;
 end
@@ -10,6 +10,8 @@ if isempty(D) %Error in case data can't be found
     fprintf('D is empty. Something wrong with loading data.');
     return
 end
+
+% if exist D{
 
 N = D{1}.numTrials; % N = numTrials // trn = trial number {1,N}
 if trn < 1, trn = 1; end

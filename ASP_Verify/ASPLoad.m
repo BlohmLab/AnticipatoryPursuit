@@ -2,8 +2,8 @@
 function [D,pathname1,firstload,loadPath] = ASPLoad(loadPath)
 
 try
-    origPath = 'D:\Master\Program\ASPVerify';
-    savePath = 'D:\Master\Data\02_Loaded';
+    origPath = 'D:\Felix\Program\ASP_Verify';
+    savePath = 'D:\Felix\Data\02_Loaded';
     cd(loadPath);
     [filename1,pathname1] = uigetfile({'*.mat'},'Choose XP record file you want to load....'); %load in mat-file = Trial parameters
     cd(pathname1);
