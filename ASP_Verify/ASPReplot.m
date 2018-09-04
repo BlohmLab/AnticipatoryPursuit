@@ -11,7 +11,12 @@ if isempty(D) %Error in case data can't be found
     return
 end
 
-% if exist D{
+% Create the 'exclude'-value for this trial, if it doesn't exist yet
+try
+    test = D{trn}.exclude;
+catch
+    D{trn}.exclude = 0;
+end 
 
 N = D{1}.numTrials; % N = numTrials // trn = trial number {1,N}
 if trn < 1, trn = 1; end
@@ -20,7 +25,6 @@ ASPGoodBadToggle;
 
 filestr = D{1}.dFilename(1:end-5);
 set(f,'name',['ASPAI: Anticipatory SP Analysis Interface: ' filestr ',trial #: ' num2str(trn)]);
-
 %% - Draw plots for postion, velocity, acceleration
 
 for a = 1:3
@@ -40,8 +44,8 @@ for a = 1:3
     if a == 1
         %eyeX = plot(D{trn}.t, D{trn}.eyeX - D{trn}.eyeX(500),'r'); %plot of eye position in X
         %eyeY = plot(D{trn}.t, D{trn}.eyeY - D{trn}.eyeY(500),'Color',[0.75 0 0.75]); %plot of eye position in Y
-        eyeX = plot(D{trn}.t, D{trn}.eyeX,'r'); %plot of eye position in X
-        eyeY = plot(D{trn}.t, D{trn}.eyeY,'Color',[0.75 0 0.75]); %plot of eye position in Y
+        eyeX = plot(D{trn}.t, D{trn}.eyeX-D{trn}.eyeX(500),'r'); %plot of eye position in X
+        eyeY = plot(D{trn}.t, D{trn}.eyeY-D{trn}.eyeY(500),'Color',[0.75 0 0.75]); %plot of eye position in Y
         tarX = plot(D{trn}.tTarget, rad2deg(atan((D{trn}.target_x(1:D{1}.nFrames(trn))- D{1}.centerWidth)/D{1}.distToScreen/D{1}.ppcmx)),'g');%plot of target position in X
         legend([eyeX eyeY tarX],{'Position Eye (X)', 'Position Eye (Y)', 'Position Target (X)'},'Location','northwest');%, 'X without sacc');
         set(ax(1),'xlim',[0 length(D{trn}.eyeX)],'ylim',[-30 30]);
