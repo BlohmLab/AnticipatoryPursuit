@@ -210,8 +210,8 @@ for d = 1:2
     group(:,2) = E.spec.trialBlip(E.spec.exclude==0 & E.spec.trialDr==d);
     for peak = 1:2
         sANO = [];
-        %sANO(:,1) = M_bl_a(:,E.bliptimes_a(2*peak,1,d),1,d); sANO(:,2:3) = group(:,1:2); % Sorted blip peaks
-        sANO(:,1) = C.eyeXvws(E.bliptimes_a(2*peak,1,d),E.spec.exclude==0 & E.spec.trialDr==d);
+        %sANO(:,1) = M_bl_a(:,E.bliptimes(2*peak,1,d),1,d); sANO(:,2:3) = group(:,1:2); % Sorted blip peaks
+        sANO(:,1) = C.eyeXvws(E.bliptimes(2*peak,1,d),E.spec.exclude==0 & E.spec.trialDr==d);
         sANO(:,2:3) = group(:,1:2);
         sANO = sortrows(sANO,[2 3]);
         [p,tbl,ano_stats] = anovan(sANO(:,1),sANO(:,2:3),'model','interaction','varnames',{'hexaBlock','blipDir'}); % 2-way ANOVA
@@ -248,7 +248,7 @@ for HB = 1:3
         group(:,2) = E.spec.trialBlip(E.spec.exclude==0 & E.spec.trialDr==d & E.spec.HB==HB);
         for peak = 1:2
             sANO = [];
-            sANO(:,1) = C.eyeXvws(E.bliptimes_a(2*peak,1,d),E.spec.exclude==0 & E.spec.trialDr==d & E.spec.HB==HB);
+            sANO(:,1) = C.eyeXvws(E.bliptimes(2*peak,1,d),E.spec.exclude==0 & E.spec.trialDr==d & E.spec.HB==HB);
             sANO(:,2:3) = group(:,1:2); % Sorted blip peaks
             sANO = sortrows(sANO,[2 3]);
             [p,tbl,ano_stats] = anovan(sANO(:,1),sANO(:,2:3),'model','interaction','varnames',{'hexaBlock','blipDir'}); % 2-way ANOVA
