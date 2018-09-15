@@ -1,4 +1,4 @@
-function plotBaseline(E,real)
+function plotBaseline(E)
 
 %% Plot session difference in blank phase depending on direction, pPiS and block (1+2/3+4/5+6)
 direction = ["Left","Right"];
@@ -28,7 +28,6 @@ for dr = 1:2
         end
     end
     savefig(stable_diff_fig,strcat(E.name(1:4),'_HB1_Blank_Stability(',direction(dr),').fig'));
-    saveas(stable_diff_fig,strcat(E.name(1:4),'_HB1_Blank_Stability(',direction(dr),').png'));
     saveas(stable_diff_fig,strcat(E.name(1:4),'_HB1_Blank_Stability(',direction(dr),').svg'));
     close stable_diff_fig
 end
@@ -58,7 +57,6 @@ for dr = 1:2
         end
     end
     savefig(stable_diff_fig,strcat(E.name(1:4),'_HB1_Blip_Stability(',direction(dr),').fig'));
-    saveas(stable_diff_fig,strcat(E.name(1:4),'_HB1_Blip_Stability(',direction(dr),').png'));
     saveas(stable_diff_fig,strcat(E.name(1:4),'_HB1_Blip_Stability(',direction(dr),').svg'));
     close stable_diff_fig;
 end
@@ -73,8 +71,8 @@ for dr = 1:2
         hold on
         plot((E.bliptimes(2,1,dr)-E.tEvents(4))*[1 1],[-30 30],'k');
         plot((E.bliptimes(4,1,dr)-E.tEvents(4))*[1 1],[-30 30],'k');
-        Anodal = plot(1:400,real.m_avtl_blip(:,1,3,dr,HB));
-        Cathodal = plot(1:400,real.m_avtl_blip(:,2,3,dr,HB));
+        Anodal = plot(1:400,E.AV.m_avtl_blip(:,1,3,dr,HB));
+        Cathodal = plot(1:400,E.AV.m_avtl_blip(:,2,3,dr,HB));
         hold off
         legend([Anodal Cathodal],{'Zero-Blip - Anodal','Zero-Blip - Cathodal'},'location','northwest');
         xlabel('time post-blip [ms]');
@@ -87,8 +85,8 @@ for dr = 1:2
     plot([0 400],[0 0],'k');
     plot((E.bliptimes(2,1,dr)-E.tEvents(4))*[1 1],[-30 30],'k');
     plot((E.bliptimes(4,1,dr)-E.tEvents(4))*[1 1],[-30 30],'k');
-    HB1 = plot(1:400,real.m_avtl_blip(:,2,3,dr,1)-real.m_avtl_blip(:,1,3,dr,1),'g');
-    HB2 = plot(1:400,real.m_avtl_blip(:,2,3,dr,2)-real.m_avtl_blip(:,1,3,dr,2),'m');
+    HB1 = plot(1:400,E.AV.m_avtl_blip(:,2,3,dr,1)-E.AV.m_avtl_blip(:,1,3,dr,1),'g');
+    HB2 = plot(1:400,E.AV.m_avtl_blip(:,2,3,dr,2)-E.AV.m_avtl_blip(:,1,3,dr,2),'m');
     hold off
     legend([HB1 HB2],{'Diff(Cat-An) - Hexablock 1','Diff(Cat-An) - Hexablock 2'},'location','northwest');
     xlabel('time post-blip [ms]');
@@ -97,7 +95,6 @@ for dr = 1:2
     title(plots(3*dr+HB-3));
 end
 savefig(stable_diff_fig,strcat(E.name(1:4),'_AVTrace_Blip_B.fig'));
-saveas(stable_diff_fig,strcat(E.name(1:4),'_AVTrace_Blip_B.png'));
 saveas(stable_diff_fig,strcat(E.name(1:4),'_AVTrace_Blip_B.svg'));
 close stable_diff_fig;
 end

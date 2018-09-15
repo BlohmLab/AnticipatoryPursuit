@@ -1,7 +1,7 @@
 function extractHisto(C,E,multiSession)
 
 direction = ["Left","Right"];
-multiCond = ["PreStim","Stim","PostStim"];
+multiCond = ["Pre","Stim","Post"];
 colors = {[0 0.5 1],[1 0.5 0],[0 1 0]};
 
 %% Distribution of rv_ASP depending on pPiS and stimulation for single session
@@ -24,7 +24,6 @@ for dr = 1:2
 end
 savefig(hisBlankSingle,strcat(E.name(1:4),'_Histo_Blank(Total).fig'));
 saveas(hisBlankSingle,strcat(E.name(1:4),'_Histo_Blank(Total).svg'));
-saveas(hisBlankSingle,strcat(E.name(1:4),'_Histo_Blank(Total).png'));
 close hisBlankSingle;
 
 %% Distribution of rv_ASP depending on pPiS and stimulation for multi-session
@@ -50,7 +49,6 @@ if multiSession == 1
             end
         end
         savefig(hisBlankMulti,strcat(E.name(1:4),'_Histo_Blank(',multiCond(HB),').fig'));
-        saveas(hisBlankMulti,strcat(E.name(1:4),'_Histo_Blank(',multiCond(HB),').png'));
         saveas(hisBlankMulti,strcat(E.name(1:4),'_Histo_Blank(',multiCond(HB),').svg'));
         close hisBlankMulti;
     end
@@ -76,7 +74,6 @@ for dr = 1:2
     end
 end
 savefig(hisSaccSingle,strcat(E.name(1:4),'_Histo_NSacc(Total).fig'));
-saveas(hisSaccSingle,strcat(E.name(1:4),'_Histo_NSacc(Total).png'));
 saveas(hisSaccSingle,strcat(E.name(1:4),'_Histo_NSacc(Total).svg'));
 close hisSaccSingle;
 
@@ -104,7 +101,6 @@ if multiSession == 1
             end
         end
         savefig(hisSaccMulti,strcat(E.name(1:4),'_Histo_NSacc(',multiCond(HB),').fig'));
-        saveas(hisSaccMulti,strcat(E.name(1:4),'_Histo_NSacc(',multiCond(HB),').png'));
         saveas(hisSaccMulti,strcat(E.name(1:4),'_Histo_NSacc(',multiCond(HB),').svg'));
         close hisSaccMulti;
     end
@@ -128,7 +124,6 @@ for dr = 1:2
         end
     end
     savefig(hisBlipSingle,strcat(E.name(1:4),'_Histo_Blip(Total)_',direction(dr),'.fig'));
-    saveas(hisBlipSingle,strcat(E.name(1:4),'_Histo_Blip(Total)_',direction(dr),'.png'));
     saveas(hisBlipSingle,strcat(E.name(1:4),'_Histo_Blip(Total)_',direction(dr),'.svg'));
     close hisBlipSingle;
 end
@@ -157,7 +152,6 @@ if multiSession == 1
                 end
             end
             savefig(hisBlipMulti,strcat(E.name(1:4),'_Histo_Blip(',cell2mat(multiCond(HB)),')_',cell2mat(direction(dr)),'.fig'));
-            saveas(hisBlipMulti,strcat(E.name(1:4),'_Histo_Blip(',cell2mat(multiCond(HB)),')_',cell2mat(direction(dr)),'.png'));
             saveas(hisBlipMulti,strcat(E.name(1:4),'_Histo_Blip(',cell2mat(multiCond(HB)),')_',cell2mat(direction(dr)),'.svg'));
             close hisBlipMulti;
         end

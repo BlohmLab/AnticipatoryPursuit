@@ -37,10 +37,10 @@ for iTrial = 1:length(sieve)
         if correct == 8
             NoAT = NoAT+1;
         end
-        if plotData.para(numPlot,9,1) == C.paraTrials(7,iTrial)+1 || plotData.para(numPlot,9,1) == 0 %Blank good?
+        if plotData.para(numPlot,9,1) == C.paraTrials(7,iTrial) || plotData.para(numPlot,9,1) == 0 %Blank good?
             correct = correct+1;
         end
-        if plotData.para(numPlot,10,1) == C.paraTrials(8,iTrial)+1 || plotData.para(numPlot,10,1) == 0 %Blip good?
+        if plotData.para(numPlot,10,1) == C.paraTrials(8,iTrial) || plotData.para(numPlot,10,1) == 0 %Blip good?
             correct = correct+1;
         end
         if correct == 10

@@ -1,4 +1,4 @@
-function extractFigures(E,multiSession,real,corr)
+function extractFigures(E,multiSession,orig,corr)
 
 multiCond = ["PreStim","Stim","PostStim"];
 
@@ -20,7 +20,7 @@ if multiSession == 1
                 plot((E.tEvents(5)-E.tEvents(2))*[1 1],[-40 40],'c');
                 plot((E.tEvents(6)-E.tEvents(2))*[1 1],[-40 40],'k');
                 %plot((E.tEvents(3)-E.tEvents(2)+50)*[1 1],[-20 20],'c');
-                %PiS1 = plot(-250:1449,real.m_avtl_trial(:,stim,2,dr));
+                %PiS1 = plot(-250:1449,orig.m_avtl_trial(:,stim,2,dr));
                 PiS2 = plot(-150:1449,corr.m_avtl_trial(:,stim,3,dr,HB));
                 PiS3 = plot(-150:1449,corr.m_avtl_trial(:,stim,4,dr,HB));
                 PiS4 = plot(-150:1449,corr.m_avtl_trial(:,stim,5,dr,HB));
@@ -36,7 +36,6 @@ if multiSession == 1
             end
         end
         savefig(figTrialMulti,strcat(E.name(1:4),'_AVTrace_Trial(',multiCond(HB),').fig'));
-        saveas(figTrialMulti,strcat(E.name(1:4),'_AVTrace_Trial(',multiCond(HB),').png'));
         saveas(figTrialMulti,strcat(E.name(1:4),'_AVTrace_Trial(',multiCond(HB),').svg'));
         close figTrialMulti;
     end
@@ -55,11 +54,16 @@ if multiSession == 1
                 hold on
                 plot([400 600],[0 0],'k');
                 plot((E.tEvents(2)+500)*[1 1],[-40 40],'k');
-                %PiS1 = plot(-250:1449,real.s_avtl_trial(:,stim,2,dr));
+                %PiS1 = plot(-250:1449,orig.s_avtl_trial(:,stim,2,dr));
                 PiS2 = plot(400:600,corr.m_avtl_trial(550:750,stim,3,dr,HB));
                 PiS3 = plot(400:600,corr.m_avtl_trial(550:750,stim,4,dr,HB));
                 PiS4 = plot(400:600,corr.m_avtl_trial(550:750,stim,5,dr,HB));
                 PiS5 = plot(400:600,corr.m_avtl_trial(550:750,stim,6,dr,HB));
+                if pc ~= 3 && pc ~= 6
+                    for PiS = 2:5
+                        plot(460:530,corr.steadySlope(stim,2,dr,HB)*(0:70)+corr.steadyOffset(stim,PiS,dr,HB),'k');
+                    end
+                end
                 hold off
                 %legend([PiS1 PiS2 PiS3 PiS4 PiS5],{'PiS 1','PiS 2','PiS 3','PiS 4','PiS 5'});
                 legend([PiS2 PiS3 PiS4 PiS5],{'PiS 2','PiS 3','PiS 4','PiS 5'});
@@ -71,7 +75,6 @@ if multiSession == 1
             end
         end
         savefig(figSteadyMulti,strcat(E.name(1:4),'_AVTrace_Steady(',multiCond(HB),').fig'));
-        saveas(figSteadyMulti,strcat(E.name(1:4),'_AVTrace_Steady(',multiCond(HB),').png'));
         saveas(figSteadyMulti,strcat(E.name(1:4),'_AVTrace_Steady(',multiCond(HB),').svg'));
         close figSteadyMulti;
     end
@@ -104,7 +107,6 @@ if multiSession == 1
             end
         end
         savefig(figBlankMulti,strcat(E.name(1:4),'_AVTrace_Blank(',multiCond(HB),').fig'));
-        saveas(figBlankMulti,strcat(E.name(1:4),'_AVTrace_Blank(',multiCond(HB),').png'));
         saveas(figBlankMulti,strcat(E.name(1:4),'_AVTrace_Blank(',multiCond(HB),').svg'));
         close figBlankMulti;
     end
@@ -149,7 +151,6 @@ if multiSession == 1
             title(plots(dr+2));
         end
         savefig(figBlipMulti,strcat(E.name(1:4),'_AVTrace_Blip(',multiCond(HB),').fig'));
-        saveas(figBlipMulti,strcat(E.name(1:4),'_AVTrace_Blip(',multiCond(HB),').png'));
         saveas(figBlipMulti,strcat(E.name(1:4),'_AVTrace_Blip(',multiCond(HB),').svg'));
         close figBlipMulti;
     end

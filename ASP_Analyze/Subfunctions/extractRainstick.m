@@ -1,7 +1,7 @@
 function extractRainstick(C,E,multiSession)
 
 direction = ["Left","Right"];
-multiCond = ["PreStim","Stim","PostStim"];
+multiCond = ["Pre","Stim","Post"];
 colors = {[0 0.5 1],[1 0.5 0],[0 1 0]};
 
 %% Distribution of ASP & Onset depending on pPiS and stimulation for single session
@@ -24,31 +24,33 @@ for para = 1:3
                 data2 = E.on_ASP(E.spec.exclude==0 & E.spec.prevTrial(:,1)==dr & E.spec.prevTrial(:,2)==pPiS & E.spec.HB==2);
                 data3 = E.on_ASP(E.spec.exclude==0 & E.spec.prevTrial(:,1)==dr & E.spec.prevTrial(:,2)==pPiS & E.spec.HB==3);
             end
-            subplot(2,5,5*dr+pPiS-5);
-            hold on;
-            rain1 = raincloud_plot('X',data1,'box_on',1,'color',cell2mat(colors(1)),'alpha',0.5,'box_dodge', 1, 'box_dodge_amount', .1, 'dot_dodge_amount', .1,'box_col_match', 0);
-            rain2 = raincloud_plot('X',data2,'box_on',1,'color',cell2mat(colors(2)),'alpha',0.5,'box_dodge', 1, 'box_dodge_amount', .3, 'dot_dodge_amount', .3,'box_col_match', 0);
-            rain3 = raincloud_plot('X',data3,'box_on',1,'color',cell2mat(colors(3)),'alpha',0.5,'box_dodge', 1, 'box_dodge_amount', .5, 'dot_dodge_amount', .5,'box_col_match', 0);
-            hold off;
-            if para == 1
-                ylim([-0.15 0.225]);
-                xlim([15*dr-45,15*dr]);
-                paraName = 'RV';
-            elseif para == 2
-                ylim([-0.1 0.225]);
-                xlim([15*dr-45,15*dr]);
-                paraName = 'EV';
-            elseif para == 3
-                ylim([-0.025 0.035]);
-                xlim([750,1100]);
-                paraName = 'ON';
-            end
-            title(plots(5*dr+pPiS-5));
-            
+%             if para ~= 1 && dr == 2
+%                 
+%             else
+                subplot(2,5,5*dr+pPiS-5);
+                hold on;
+                rain1 = raincloud_plot('X',data1,'box_on',1,'color',cell2mat(colors(1)),'alpha',0.5,'box_dodge', 1, 'box_dodge_amount', .1, 'dot_dodge_amount', .1,'box_col_match', 0);
+                rain2 = raincloud_plot('X',data2,'box_on',1,'color',cell2mat(colors(2)),'alpha',0.5,'box_dodge', 1, 'box_dodge_amount', .3, 'dot_dodge_amount', .3,'box_col_match', 0);
+                rain3 = raincloud_plot('X',data3,'box_on',1,'color',cell2mat(colors(3)),'alpha',0.5,'box_dodge', 1, 'box_dodge_amount', .5, 'dot_dodge_amount', .5,'box_col_match', 0);
+                hold off;
+                if para == 1
+                    ylim([-0.15 0.225]);
+                    xlim([15*dr-45,15*dr]);
+                    paraName = 'RV';
+                elseif para == 2
+                    ylim([-0.1 0.225]);
+                    xlim([15*dr-45,15*dr]);
+                    paraName = 'EV';
+                elseif para == 3
+                    ylim([-0.025 0.035]);
+                    xlim([750,1100]);
+                    paraName = 'ON';
+                end
+                title(plots(5*dr+pPiS-5));
+%             end
         end
     end
     savefig(rainBlankSingle,strcat(E.name(1:4),'_Rain_',paraName,'_Blank(Total).fig'));
-    saveas(rainBlankSingle,strcat(E.name(1:4),'_Rain_',paraName,'_Blank(Total).png'));
     saveas(rainBlankSingle,strcat(E.name(1:4),'_Rain_',paraName,'_Blank(Total).svg'));
     close rainBlankSingle;
 end
@@ -94,7 +96,6 @@ if multiSession == 1
                 end
             end
             savefig(rainBlankMulti,strcat(E.name(1:4),'_Rain_',paraName,'_Blank(',multiCond(HB),').fig'));
-            saveas(rainBlankMulti,strcat(E.name(1:4),'_Rain_',paraName,'_Blank(',multiCond(HB),').png'));
             saveas(rainBlankMulti,strcat(E.name(1:4),'_Rain_',paraName,'_Blank(',multiCond(HB),').svg'));
             close rainBlankMulti;
         end
@@ -122,7 +123,6 @@ for dr = 1:2
         end
     end
     savefig(rainBlipSingle,strcat(E.name(1:4),'_Rain_Blip(Total)_',direction(dr),'.fig'));
-    saveas(rainBlipSingle,strcat(E.name(1:4),'_Rain_Blip(Total)_',direction(dr),'.png'));
     saveas(rainBlipSingle,strcat(E.name(1:4),'_Rain_Blip(Total)_',direction(dr),'.svg'));
     close rainBlipSingle;
 end
@@ -148,7 +148,6 @@ if multiSession == 1
                 end
             end
             savefig(rainBlipMulti,strcat(E.name(1:4),'_Rain_Blip(',multiCond(HB),')_',direction(dr),'.fig'));
-            saveas(rainBlipMulti,strcat(E.name(1:4),'_Rain_Blip(',multiCond(HB),')_',direction(dr),'.png'));
             saveas(rainBlipMulti,strcat(E.name(1:4),'_Rain_Blip(',multiCond(HB),')_',direction(dr),'.svg'));
             close rainBlipMulti;
         end
